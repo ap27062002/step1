@@ -8,6 +8,7 @@ import {
   linkedInContentSearchUrl,
   linkedInJobSearchUrl,
 } from "@/lib/linkedin";
+import ReachOutPanel from "./ReachOutPanel";
 
 function LinkedInSection() {
   return (
@@ -204,6 +205,7 @@ export default function JobsPage() {
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 {result.snippet}
               </p>
+              {!result.isSample && <ReachOutPanel result={result} />}
             </div>
           ))}
         </div>

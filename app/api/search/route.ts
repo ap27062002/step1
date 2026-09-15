@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { webSearch } from "@/lib/googleSearch";
+import { webSearch } from "@/lib/tavily";
 import { persona } from "@/lib/persona";
 
 export async function GET(request: NextRequest) {

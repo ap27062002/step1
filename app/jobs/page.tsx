@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { persona } from "@/lib/persona";
-import type { SearchResult } from "@/lib/googleSearch";
+import type { SearchResult } from "@/lib/tavily";
 import {
   linkedInCompanySearchUrl,
   linkedInContentSearchUrl,
@@ -168,9 +168,9 @@ export default function JobsPage() {
 
         {usingSampleData && (
           <div className="mt-6 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300">
-            Showing sample data. Add <code>GOOGLE_CSE_API_KEY</code> and{" "}
-            <code>GOOGLE_CSE_CX</code> to your <code>.env</code> file to pull
-            live search results. See the README for setup instructions.
+            Showing sample data. Add <code>TAVILY_API_KEY</code> to your{" "}
+            <code>.env</code> file to pull live search results. See the
+            README for setup instructions.
           </div>
         )}
 

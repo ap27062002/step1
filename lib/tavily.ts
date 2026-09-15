@@ -13,7 +13,7 @@ const SAMPLE_RESULTS: SearchResult[] = [
     title: "Sample: AI agent startup raises seed round",
     link: "#",
     snippet:
-      "Sample result shown because no search API key is configured yet. Add GOOGLE_CSE_API_KEY and GOOGLE_CSE_CX to your .env file to see live results.",
+      "Sample result shown because no search API key is configured yet. Add TAVILY_API_KEY to your .env file to see live results.",
     source: "example.com",
     isSample: true,
   },
@@ -22,7 +22,7 @@ const SAMPLE_RESULTS: SearchResult[] = [
     title: "Sample: emerging no-code AI startups to watch",
     link: "#",
     snippet:
-      "Sample result shown because no search API key is configured yet. Add GOOGLE_CSE_API_KEY and GOOGLE_CSE_CX to your .env file to see live results.",
+      "Sample result shown because no search API key is configured yet. Add TAVILY_API_KEY to your .env file to see live results.",
     source: "example.com",
     isSample: true,
   },
@@ -31,7 +31,7 @@ const SAMPLE_RESULTS: SearchResult[] = [
     title: "Sample: stealth AI startup hiring forward deployed engineers",
     link: "#",
     snippet:
-      "Sample result shown because no search API key is configured yet. Add GOOGLE_CSE_API_KEY and GOOGLE_CSE_CX to your .env file to see live results.",
+      "Sample result shown because no search API key is configured yet. Add TAVILY_API_KEY to your .env file to see live results.",
     source: "example.com",
     isSample: true,
   },
@@ -40,36 +40,45 @@ const SAMPLE_RESULTS: SearchResult[] = [
 export async function webSearch(
   query: string,
 ): Promise<{ results: SearchResult[]; usingSampleData: boolean; error?: string }> {
-  const apiKey = process.env.GOOGLE_CSE_API_KEY;
-  const cx = process.env.GOOGLE_CSE_CX;
+  const apiKey = process.env.TAVILY_API_KEY;
 
-  if (!apiKey || !cx) {
+  if (!apiKey) {
     return { results: SAMPLE_RESULTS, usingSampleData: true };
   }
 
-  const url = new URL("https://www.googleapis.com/customsearch/v1");
-  url.searchParams.set("key", apiKey);
-  url.searchParams.set("cx", cx);
-  url.searchParams.set("q", query);
-  url.searchParams.set("num", "10");
-
   try {
-    const res = await fetch(url.toString(), { next: { revalidate: 1800 } });
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        query,
+        search_depth: "basic",
+        max_results: 10,
+      }),
+      next: { revalidate: 1800 },
+    });
     if (!res.ok) {
       return {
         results: SAMPLE_RESULTS,
         usingSampleData: true,
-        error: `Search API returned ${res.status}`,
+        error: `Tavily API returned ${res.status}`,
       };
     }
     const data = await res.json();
-    const results: SearchResult[] = (data.items ?? []).map(
-      (item: { title: string; link: string; snippet?: string; displayLink?: string }, i: number) => ({
-        id: `${item.link}-${i}`,
+    const results: SearchResult[] = (data.results ?? []).map(
+      (item: { title: string; url: string; content?: string }, i: number) => ({
+        id: `${item.url}-${i}`,
         title: item.title,
-        link: item.link,
-        snippet: item.snippet ?? "",
-        source: item.displayLink ?? new URL(item.link).hostname,
+        link: item.url,
+        snippet: item.content ?? "",
+        source: (() => {
+          try {
+            return new URL(item.url).hostname;
+          } catch {
+            return item.url;
+          }
+        })(),
         isSample: false,
       }),
     );

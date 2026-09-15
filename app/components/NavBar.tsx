@@ -7,7 +7,6 @@ import { persona } from "@/lib/persona";
 const links = [
   { href: "/", label: "Portfolio" },
   { href: "/jobs", label: "Jobs" },
-  { href: "/applications", label: "Applications" },
 ];
 
 export default function NavBar() {

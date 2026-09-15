@@ -98,6 +98,15 @@ export const persona = {
   contact: {
     email: "apoorvankit.2001@gmail.com",
   },
+  // Curated queries for the startup/funding discovery feed on the Jobs page.
+  discoveryQueries: [
+    "AI agent startup raises seed funding 2026",
+    "AI native startup Series A funding announcement",
+    "no-code AI automation startup funding",
+    "new AI startup stealth launch hiring product manager",
+    "fastest growing AI startups to watch 2026",
+    "AI agent platform startup hiring forward deployed",
+  ],
 };
 
 export type Persona = typeof persona;

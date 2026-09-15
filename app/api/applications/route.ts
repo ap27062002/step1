@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, dbAvailable } from "@/lib/prisma";
+
+const NOT_CONFIGURED = {
+  error:
+    "Application tracker isn't configured yet. Set TURSO_DATABASE_URL to enable it.",
+};
 
 export async function GET() {
+  if (!dbAvailable) {
+    return NextResponse.json(NOT_CONFIGURED, { status: 503 });
+  }
   const applications = await prisma.application.findMany({
     orderBy: { updatedAt: "desc" },
   });
@@ -9,6 +17,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!dbAvailable) {
+    return NextResponse.json(NOT_CONFIGURED, { status: 503 });
+  }
   const body = await request.json();
   const { jobTitle, company, location, url, source, salary, notes, status } =
     body;

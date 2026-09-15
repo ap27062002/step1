@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, dbAvailable } from "@/lib/prisma";
 import type { $Enums } from "@/app/generated/prisma/client";
+
+const NOT_CONFIGURED = {
+  error:
+    "Application tracker isn't configured yet. Set TURSO_DATABASE_URL to enable it.",
+};
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (!dbAvailable) {
+    return NextResponse.json(NOT_CONFIGURED, { status: 503 });
+  }
   const { id } = await params;
   const body = await request.json();
   const { status, notes, appliedDate } = body;
@@ -39,6 +47,9 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (!dbAvailable) {
+    return NextResponse.json(NOT_CONFIGURED, { status: 503 });
+  }
   const { id } = await params;
   try {
     await prisma.application.delete({ where: { id } });

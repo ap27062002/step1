@@ -12,6 +12,7 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   async function runSearch(searchWhat: string, searchWhere: string) {
     setLoading(true);
@@ -52,6 +53,10 @@ export default function JobsPage() {
     });
     if (res.ok) {
       setSavedIds((prev) => new Set(prev).add(job.id));
+      setSaveError(null);
+    } else {
+      const data = await res.json().catch(() => null);
+      setSaveError(data?.error ?? "Could not save this job. Please try again.");
     }
   }
 
@@ -120,6 +125,12 @@ export default function JobsPage() {
       {error && (
         <div className="mt-6 rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
           {error}
+        </div>
+      )}
+
+      {saveError && (
+        <div className="mt-6 rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+          {saveError}
         </div>
       )}
 
